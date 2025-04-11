@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+
+    <script>
+
+let board = ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '];
+let currentPlayer = '❌';
+let gameMode = '';
+
+function printBoard() {
+  console.log(`
+  ${board[0]} | ${board[1]} | ${board[2]}
+  -------------
+  ${board[3]} | ${board[4]} | ${board[5]}
+  -------------
+  ${board[6]} | ${board[7]} | ${board[8]}
+  `);
+}
+
+function checkWin(player) {
+  const winPatterns = [
+    [0,1,2],[3,4,5],[6,7,8], // rows
+    [0,3,6],[1,4,7],[2,5,8], // columns
+    [0,4,8],[2,4,6]          // diagonals
+  ];
+  return winPatterns.some(p =>
+    board[p[0]] === player &&
+    board[p[1]] === player &&
+    board[p[2]] === player
+  );
+}
+
+function getEmptyPositions() {
+  return board.map((val, idx) => val === ' ' ? idx : null).filter(v => v !== null);
+}
+
+function playerMove() {
+  let move = parseInt(prompt(`Player ${currentPlayer}, enter position (0-8):`), 10);
+  if (board[move] !== '  ' || isNaN(move) || move < 0 || move > 8) {
+    console.log("⚠️ Invalid move. Try again.");
+    return playerMove();
+  }
+  board[move] = currentPlayer;
+}
+
+function computerMove() {
+  const empty = getEmptyPositions();
+  const move = empty[Math.floor(Math.random() * empty.length)];
+  console.log(`💻ordinateur: Computer chose position ${move}`);
+  board[move] = '⭕️';
+}
+
+function playGame() {
+  gameMode = prompt("Choose mode: '1' for Single Player, '2' for Multiplayer");
+  if (gameMode !== '1' && gameMode !== '2') {
+    console.log("⚠️ Invalid choice. Please refresh and try again.");
+    return;
+  }
+  for (let turn = 0; turn < 9; turn++) {
+    printBoard();
+    if (gameMode === '1') {
+      if (currentPlayer === '❌') {
+        playerMove();
+        if (checkWin('❌')) {
+          printBoard();
+          console.log("🎉 You win!");
+          return;
+        }
+      } else {
+        computerMove();
+        if (checkWin('⭕️')) {
+          printBoard();
+          console.log("💻 Computer wins!");
+          return;
+        }
+      }
+    } else {
+      // Multiplayer mode
+      playerMove();
+      if (checkWin(currentPlayer)) {
+        printBoard();
+        console.log(`🎉 Player ${currentPlayer} wins!`);
+        return;
+      }
+    }
+    currentPlayer = currentPlayer === '❌' ? '⭕️' : '❌';
+  }
+  printBoard();
+  console.log("🤝  It's a draw!");
+}
+
+playGame();
+    </script>
+</body>
+</html>
